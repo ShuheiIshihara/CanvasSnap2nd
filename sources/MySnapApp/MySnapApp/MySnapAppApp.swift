@@ -6,16 +6,24 @@
 //
 
 import SwiftUI
-import CoreData
 
 @main
 struct MySnapAppApp: App {
-    let persistenceController = PersistenceController.shared
-
     var body: some Scene {
-        WindowGroup {
-            ContentView()
-                .environment(\.managedObjectContext, persistenceController.container.viewContext)
+        Settings {
+            SettingsView()
+        }
+
+        MenuBarExtra("スクリーンショット", systemImage: "camera.viewfinder") {
+            Button("設定...") {
+                NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
+            }
+            .keyboardShortcut(",", modifiers: .command)
+            Divider()
+            Button("終了") {
+                NSApplication.shared.terminate(nil)
+            }
+            .keyboardShortcut("q", modifiers: .command)
         }
     }
 }

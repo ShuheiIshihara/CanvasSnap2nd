@@ -35,3 +35,6 @@ Key decisions to record here when made:
 - Project structure (`/src`, `/tests`, solution layout)
 - Database technology and ORM (EF Core, Dapper, etc.)
 - Key NuGet dependencies
+
+## tech-term-explainer
+  tech_term_output: docs/terms/

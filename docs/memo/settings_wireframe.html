@@ -1,0 +1,1243 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>設定画面 ワイヤーフレーム - スクリーンショットアプリ (Swift/SwiftUI)</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600&display=swap');
+
+  :root {
+    --wire-bg: #F2F2F7;
+    --wire-border: #D1D1D6;
+    --wire-text: #1D1D1F;
+    --wire-text-secondary: #86868B;
+    --wire-accent: #0071E3;
+    --wire-card-bg: #FFFFFF;
+    --wire-input-bg: #F5F5F7;
+    --wire-divider: #E5E5EA;
+    --wire-annotation: #E8453C;
+    --wire-annotation-bg: #FFF5F4;
+    --wire-component-tag: #FF6B00;
+    --wire-component-bg: #FFF2E8;
+    --wire-swift-tag: #F05138;
+    --wire-swift-bg: #FFEFEC;
+    --radius: 10px;
+    --radius-sm: 6px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Noto Sans JP', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #E8E8ED;
+    color: var(--wire-text);
+    padding: 40px;
+    min-height: 100vh;
+  }
+
+  /* Page header */
+  .page-header {
+    max-width: 1100px;
+    margin: 0 auto 16px;
+  }
+  .page-header h1 {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--wire-text);
+    margin-bottom: 6px;
+  }
+  .page-header p {
+    font-size: 13px;
+    color: var(--wire-text-secondary);
+  }
+  .page-header .tech-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 10px;
+    background: var(--wire-swift-bg);
+    color: var(--wire-swift-tag);
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    margin-left: 8px;
+  }
+
+  /* Legend */
+  .legend {
+    max-width: 1100px;
+    margin: 0 auto 24px;
+    display: flex;
+    gap: 20px;
+    font-size: 12px;
+    flex-wrap: wrap;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+  .legend-dot.swiftui { background: var(--wire-swift-tag); }
+  .legend-dot.appkit { background: var(--wire-component-tag); }
+  .legend-dot.annotation { background: var(--wire-annotation); }
+
+  /* Wireframe window — macOS Settings scene style */
+  .window {
+    max-width: 780px;
+    margin: 0 auto 32px;
+    background: var(--wire-bg);
+    border-radius: 12px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.12), 0 1px 3px rgba(0,0,0,0.08);
+    overflow: hidden;
+  }
+
+  /* Title bar */
+  .titlebar {
+    height: 52px;
+    background: linear-gradient(180deg, #F6F6F8 0%, #ECECEE 100%);
+    border-bottom: 1px solid var(--wire-border);
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    position: relative;
+  }
+  .traffic-lights {
+    display: flex;
+    gap: 8px;
+  }
+  .traffic-light {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 1px solid rgba(0,0,0,0.1);
+  }
+  .tl-close { background: #FF5F57; }
+  .tl-min { background: #FFBD2E; }
+  .tl-max { background: #28C840; }
+  .titlebar-text {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--wire-text);
+  }
+
+  /* SwiftUI Settings TabView — horizontal tabs below titlebar */
+  .tab-bar {
+    display: flex;
+    gap: 4px;
+    padding: 10px 16px 0;
+    background: linear-gradient(180deg, #ECECEE 0%, #E5E5EA 100%);
+    border-bottom: 1px solid var(--wire-divider);
+  }
+  .tab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding: 8px 14px 10px;
+    border-radius: 6px 6px 0 0;
+    font-size: 11px;
+    color: var(--wire-text-secondary);
+    cursor: pointer;
+    border: 1px solid transparent;
+    border-bottom: none;
+    margin-bottom: -1px;
+    transition: all 0.15s;
+    min-width: 80px;
+  }
+  .tab .tab-icon {
+    font-size: 20px;
+  }
+  .tab:hover {
+    background: rgba(0,0,0,0.04);
+  }
+  .tab.active {
+    background: var(--wire-bg);
+    color: var(--wire-text);
+    border-color: var(--wire-divider);
+    font-weight: 500;
+  }
+
+  /* Content area */
+  .content {
+    padding: 24px 32px 32px;
+    min-height: 420px;
+  }
+
+  /* SwiftUI Form-style settings */
+  .form-section {
+    margin-bottom: 24px;
+  }
+  .form-section-header {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--wire-text);
+    margin-bottom: 8px;
+    padding-left: 2px;
+  }
+  .form-group {
+    background: var(--wire-card-bg);
+    border-radius: var(--radius);
+    border: 1px solid var(--wire-divider);
+    overflow: hidden;
+  }
+
+  /* Form row (SwiftUI Form row style) */
+  .form-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--wire-divider);
+    min-height: 44px;
+    gap: 16px;
+  }
+  .form-row:last-child {
+    border-bottom: none;
+  }
+  .form-label {
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--wire-text);
+  }
+  .form-sublabel {
+    font-size: 11px;
+    color: var(--wire-text-secondary);
+    margin-top: 2px;
+  }
+  .form-control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  /* SwiftUI Toggle */
+  .sw-toggle {
+    width: 38px;
+    height: 22px;
+    border-radius: 11px;
+    background: #D1D1D6;
+    position: relative;
+    cursor: pointer;
+  }
+  .sw-toggle.on {
+    background: #34C759;
+  }
+  .sw-toggle::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: white;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    transition: transform 0.2s;
+  }
+  .sw-toggle.on::after {
+    transform: translateX(16px);
+  }
+
+  /* SwiftUI Picker (MenuPickerStyle) */
+  .sw-picker {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    background: var(--wire-card-bg);
+    border: 1px solid var(--wire-divider);
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    color: var(--wire-text);
+    min-width: 120px;
+    justify-content: space-between;
+    box-shadow: 0 1px 1px rgba(0,0,0,0.04);
+  }
+  .sw-picker .chevron {
+    font-size: 10px;
+    color: var(--wire-text-secondary);
+  }
+
+  /* SwiftUI TextField */
+  .sw-textfield {
+    padding: 5px 10px;
+    background: var(--wire-card-bg);
+    border: 1px solid var(--wire-divider);
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    color: var(--wire-text);
+    min-width: 260px;
+    box-shadow: inset 0 1px 1px rgba(0,0,0,0.03);
+  }
+
+  /* SwiftUI Button */
+  .sw-button {
+    padding: 4px 14px;
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    font-weight: 500;
+    border: 1px solid var(--wire-divider);
+    background: var(--wire-card-bg);
+    color: var(--wire-text);
+    cursor: pointer;
+    box-shadow: 0 1px 1px rgba(0,0,0,0.04);
+  }
+  .sw-button.prominent {
+    background: var(--wire-accent);
+    color: white;
+    border-color: var(--wire-accent);
+  }
+
+  /* SwiftUI Slider */
+  .sw-slider {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .sw-slider-track {
+    width: 120px;
+    height: 4px;
+    background: var(--wire-divider);
+    border-radius: 2px;
+    position: relative;
+  }
+  .sw-slider-fill {
+    height: 100%;
+    width: 85%;
+    background: var(--wire-accent);
+    border-radius: 2px;
+  }
+  .sw-slider-thumb {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: white;
+    border: 1px solid var(--wire-border);
+    position: absolute;
+    top: -5px;
+    left: calc(85% - 7px);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  }
+  .sw-slider-value {
+    font-size: 12px;
+    color: var(--wire-text-secondary);
+    min-width: 32px;
+  }
+
+  /* KeyRecorder (custom NSEvent-based) */
+  .key-recorder {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    background: var(--wire-card-bg);
+    border: 1px solid var(--wire-divider);
+    border-radius: var(--radius-sm);
+    min-width: 120px;
+    justify-content: center;
+  }
+  .key {
+    padding: 2px 6px;
+    background: var(--wire-input-bg);
+    border: 1px solid var(--wire-border);
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--wire-text);
+    box-shadow: 0 1px 0 rgba(0,0,0,0.04);
+    font-family: -apple-system, monospace;
+  }
+
+  /* Permission badge */
+  .perm-granted {
+    color: #34C759;
+    font-weight: 500;
+  }
+  .perm-denied {
+    color: #FF3B30;
+    font-weight: 500;
+  }
+
+  /* Annotations */
+  .tag-swiftui {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--wire-swift-tag);
+    background: var(--wire-swift-bg);
+    padding: 2px 6px;
+    border-radius: 3px;
+    white-space: nowrap;
+    font-family: -apple-system, monospace;
+  }
+  .tag-appkit {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--wire-component-tag);
+    background: var(--wire-component-bg);
+    padding: 2px 6px;
+    border-radius: 3px;
+    white-space: nowrap;
+    font-family: -apple-system, monospace;
+  }
+  .tag-req {
+    display: inline-flex;
+    align-items: center;
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--wire-annotation);
+    background: var(--wire-annotation-bg);
+    padding: 2px 6px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+
+  .annotations {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  /* Info box */
+  .info-box {
+    margin-top: 16px;
+    padding: 12px 14px;
+    background: #FFF8E1;
+    border-radius: var(--radius);
+    border: 1px solid #FFE082;
+  }
+  .info-box-title {
+    font-size: 11px;
+    color: #F57F17;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .info-box-body {
+    font-size: 11px;
+    color: #795548;
+    line-height: 1.6;
+  }
+  .info-box-body code {
+    background: rgba(0,0,0,0.06);
+    padding: 1px 4px;
+    border-radius: 3px;
+    font-family: -apple-system, monospace;
+    font-size: 10px;
+  }
+
+  /* Menu bar mockup */
+  .menubar-mock {
+    max-width: 780px;
+    margin: 0 auto 32px;
+    background: var(--wire-card-bg);
+    border-radius: 12px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.12);
+    overflow: hidden;
+  }
+  .menubar-header {
+    padding: 16px 20px 8px;
+    border-bottom: 1px solid var(--wire-divider);
+  }
+  .menubar-header-title {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .menubar-header-sub {
+    font-size: 11px;
+    color: var(--wire-text-secondary);
+  }
+  .menubar-status {
+    background: #1D1D1F;
+    padding: 6px 12px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 12px;
+    color: white;
+    position: relative;
+  }
+  .menubar-status .dot-group {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .menubar-status .icon-box {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+  .menubar-status .our-icon {
+    background: rgba(255,255,255,0.15);
+  }
+  .menu-dropdown {
+    padding: 8px 0;
+    background: var(--wire-card-bg);
+    border: 1px solid var(--wire-divider);
+    margin: 8px 20px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    max-width: 280px;
+  }
+  .menu-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 14px;
+    font-size: 13px;
+  }
+  .menu-item .shortcut {
+    font-size: 11px;
+    color: var(--wire-text-secondary);
+    font-family: -apple-system, monospace;
+  }
+  .menu-divider {
+    height: 1px;
+    background: var(--wire-divider);
+    margin: 4px 0;
+  }
+
+  /* Component spec table */
+  .spec-section {
+    max-width: 1100px;
+    margin: 0 auto 32px;
+  }
+  .spec-section h2 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: var(--wire-text);
+  }
+  .spec-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--wire-card-bg);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+  .spec-table th {
+    background: #F2F2F7;
+    text-align: left;
+    padding: 10px 14px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    color: var(--wire-text-secondary);
+    border-bottom: 1px solid var(--wire-divider);
+  }
+  .spec-table td {
+    padding: 10px 14px;
+    font-size: 12px;
+    border-bottom: 1px solid var(--wire-divider);
+    vertical-align: top;
+    line-height: 1.5;
+  }
+  .spec-table tr:last-child td {
+    border-bottom: none;
+  }
+  .spec-table .req-id {
+    font-family: -apple-system, monospace;
+    font-size: 11px;
+    color: var(--wire-text-secondary);
+  }
+  .spec-table code {
+    font-family: -apple-system, monospace;
+    background: #F2F2F7;
+    padding: 1px 4px;
+    border-radius: 3px;
+    font-size: 11px;
+    color: var(--wire-swift-tag);
+  }
+
+  /* Section navigation */
+  .section-nav {
+    max-width: 1100px;
+    margin: 0 auto 24px;
+    display: flex;
+    gap: 0;
+    border-bottom: 2px solid var(--wire-divider);
+  }
+  .section-nav-item {
+    padding: 10px 20px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--wire-text-secondary);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.2s;
+  }
+  .section-nav-item.active {
+    color: var(--wire-accent);
+    border-bottom-color: var(--wire-accent);
+  }
+  .section-nav-item:hover {
+    color: var(--wire-text);
+  }
+
+  /* View switching */
+  .view-container { display: none; }
+  .view-container.active { display: block; }
+
+  .section-title {
+    max-width: 1100px;
+    margin: 0 auto 12px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--wire-text-secondary);
+  }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>設定画面 ワイヤーフレーム<span class="tech-badge">🦅 Swift 6 + SwiftUI</span></h1>
+  <p>スクリーンショットアプリ — SwiftUI Settings Scene (TabView) + MenuBarExtra + AppKit (範囲選択)</p>
+</div>
+
+<div class="legend">
+  <div class="legend-item">
+    <div class="legend-dot swiftui"></div>
+    <span>SwiftUIコンポーネント</span>
+  </div>
+  <div class="legend-item">
+    <div class="legend-dot appkit"></div>
+    <span>AppKit / ScreenCaptureKit API</span>
+  </div>
+  <div class="legend-item">
+    <div class="legend-dot annotation"></div>
+    <span>対応要件ID</span>
+  </div>
+</div>
+
+<div class="section-nav">
+  <div class="section-nav-item active" onclick="switchView(event, 'general')">一般</div>
+  <div class="section-nav-item" onclick="switchView(event, 'hotkey')">ホットキー</div>
+  <div class="section-nav-item" onclick="switchView(event, 'capture')">キャプチャ</div>
+  <div class="section-nav-item" onclick="switchView(event, 'menubar')">メニューバー</div>
+</div>
+
+<!-- ===== 一般設定 ===== -->
+<div id="view-general" class="view-container active">
+  <div class="section-title">Settings Scene — 「一般」タブ</div>
+  <div class="window">
+    <div class="titlebar">
+      <div class="traffic-lights">
+        <div class="traffic-light tl-close"></div>
+        <div class="traffic-light tl-min"></div>
+        <div class="traffic-light tl-max"></div>
+      </div>
+      <span class="titlebar-text">設定</span>
+    </div>
+
+    <div class="tab-bar">
+      <div class="tab active">
+        <span class="tab-icon">⚙️</span>
+        <span>一般</span>
+      </div>
+      <div class="tab">
+        <span class="tab-icon">⌨️</span>
+        <span>ホットキー</span>
+      </div>
+      <div class="tab">
+        <span class="tab-icon">📷</span>
+        <span>キャプチャ</span>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="form-section">
+        <div class="form-section-header">保存設定</div>
+        <div class="form-group">
+          <div class="form-row">
+            <div>
+              <div class="form-label">保存先ディレクトリ</div>
+              <div class="form-sublabel">~/Desktop/Screenshots</div>
+            </div>
+            <div class="form-control">
+              <div class="sw-textfield" style="color:var(--wire-text-secondary);">~/Desktop/Screenshots</div>
+              <button class="sw-button">参照...</button>
+              <div class="annotations">
+                <span class="tag-swiftui">TextField + Button</span>
+                <span class="tag-req">FR-015</span>
+              </div>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-label">デフォルト保存形式</div>
+            <div class="form-control">
+              <div class="sw-picker">
+                <span>PNG</span>
+                <span class="chevron">⌄</span>
+              </div>
+              <div class="annotations">
+                <span class="tag-swiftui">Picker</span>
+                <span class="tag-req">FR-016</span>
+              </div>
+            </div>
+          </div>
+          <div class="form-row">
+            <div>
+              <div class="form-label">JPEG品質</div>
+              <div class="form-sublabel">JPEG保存時の圧縮品質</div>
+            </div>
+            <div class="form-control">
+              <div class="sw-slider">
+                <div class="sw-slider-track">
+                  <div class="sw-slider-fill"></div>
+                  <div class="sw-slider-thumb"></div>
+                </div>
+                <span class="sw-slider-value">85%</span>
+              </div>
+              <div class="annotations">
+                <span class="tag-swiftui">Slider</span>
+                <span class="tag-req">FR-011</span>
+              </div>
+            </div>
+          </div>
+          <div class="form-row">
+            <div>
+              <div class="form-label">ファイル名パターン</div>
+              <div class="form-sublabel">例: Screenshot_20260416_143052.png</div>
+            </div>
+            <div class="form-control">
+              <div class="sw-picker" style="min-width:200px;">
+                <span>Screenshot_{date}_{time}</span>
+                <span class="chevron">⌄</span>
+              </div>
+              <div class="annotations">
+                <span class="tag-swiftui">Picker</span>
+                <span class="tag-req">FR-010</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-header">アプリ動作</div>
+        <div class="form-group">
+          <div class="form-row">
+            <div>
+              <div class="form-label">メニューバーにアイコンを表示</div>
+              <div class="form-sublabel">メニューバーから素早くキャプチャにアクセス</div>
+            </div>
+            <div class="form-control">
+              <div class="sw-toggle on"></div>
+              <div class="annotations">
+                <span class="tag-swiftui">Toggle</span>
+                <span class="tag-req">FR-020</span>
+              </div>
+            </div>
+          </div>
+          <div class="form-row">
+            <div>
+              <div class="form-label">表示言語</div>
+              <div class="form-sublabel">アプリのUIで使用する言語（各言語はネイティブ表記）</div>
+            </div>
+            <div class="form-control">
+              <div class="sw-picker" style="min-width:160px;">
+                <span>システム設定に従う</span>
+                <span class="chevron">⌄</span>
+              </div>
+              <div class="annotations">
+                <span class="tag-swiftui">Picker</span>
+                <span class="tag-req">FR-023</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dropdown preview -->
+      <div style="max-width:400px;margin:-8px 0 0 auto;padding:6px 0;background:var(--wire-card-bg);border:1px solid var(--wire-divider);border-radius:6px;box-shadow:0 4px 12px rgba(0,0,0,0.1);font-size:12px;">
+        <div style="padding:4px 12px;display:flex;align-items:center;gap:8px;">
+          <span style="color:var(--wire-accent);font-weight:600;">✓</span>
+          <span>システム設定に従う</span>
+        </div>
+        <div style="height:1px;background:var(--wire-divider);margin:4px 8px;"></div>
+        <div style="padding:4px 12px 4px 32px;">日本語</div>
+        <div style="padding:4px 12px 4px 32px;">English</div>
+      </div>
+      <div style="max-width:400px;margin:4px 0 16px auto;font-size:10px;color:var(--wire-text-secondary);font-style:italic;text-align:right;">
+        ↑ Pickerを開いた状態（選択肢は常にネイティブ表記で固定）
+      </div>
+
+      <div class="info-box">
+        <div class="info-box-title">⚙ 実装メモ</div>
+        <div class="info-box-body">
+          設定値の永続化は <code>@AppStorage</code> を使用（UserDefaultsラッパー）。<br>
+          保存先ディレクトリは <code>.fileImporter</code> モディファイアでディレクトリ選択ダイアログを起動。<br>
+          Picker は <code>.pickerStyle(.menu)</code> でmacOS標準のポップアップメニュー形式。<br>
+          <strong>言語選択肢はネイティブ表記で固定（翻訳対象外）</strong>：<code>日本語</code> / <code>English</code> は言語UIに関わらず常に同じ表記を使用。これにより英語話者でも「日本語」がどの言語か判別可能、日本語話者も「English」を即座に認識できる。<br>
+          言語切り替えは <code>AppleLanguages</code> キーを UserDefaults に保存し、アプリ再起動で反映（または <code>.environment(\.locale, ...)</code> で即時反映）。
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== ホットキー設定 ===== -->
+<div id="view-hotkey" class="view-container">
+  <div class="section-title">Settings Scene — 「ホットキー」タブ</div>
+  <div class="window">
+    <div class="titlebar">
+      <div class="traffic-lights">
+        <div class="traffic-light tl-close"></div>
+        <div class="traffic-light tl-min"></div>
+        <div class="traffic-light tl-max"></div>
+      </div>
+      <span class="titlebar-text">設定</span>
+    </div>
+
+    <div class="tab-bar">
+      <div class="tab">
+        <span class="tab-icon">⚙️</span>
+        <span>一般</span>
+      </div>
+      <div class="tab active">
+        <span class="tab-icon">⌨️</span>
+        <span>ホットキー</span>
+      </div>
+      <div class="tab">
+        <span class="tab-icon">📷</span>
+        <span>キャプチャ</span>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="form-section">
+        <div class="form-section-header">キャプチャショートカット</div>
+        <div class="form-group">
+          <div class="form-row">
+            <div class="form-label">全画面キャプチャ</div>
+            <div class="form-control">
+              <div class="key-recorder">
+                <span class="key">⌃</span>
+                <span class="key">⇧</span>
+                <span class="key">3</span>
+              </div>
+              <button class="sw-button">変更</button>
+              <div class="annotations">
+                <span class="tag-swiftui">KeyRecorderView</span>
+                <span class="tag-appkit">NSEvent</span>
+                <span class="tag-req">FR-013</span>
+              </div>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-label">範囲選択キャプチャ</div>
+            <div class="form-control">
+              <div class="key-recorder">
+                <span class="key">⌃</span>
+                <span class="key">⇧</span>
+                <span class="key">4</span>
+              </div>
+              <button class="sw-button">変更</button>
+              <div class="annotations">
+                <span class="tag-swiftui">KeyRecorderView</span>
+                <span class="tag-req">FR-013</span>
+              </div>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-label">ウィンドウ指定キャプチャ</div>
+            <div class="form-control">
+              <div class="key-recorder">
+                <span class="key">⌃</span>
+                <span class="key">⇧</span>
+                <span class="key">5</span>
+              </div>
+              <button class="sw-button">変更</button>
+              <div class="annotations">
+                <span class="tag-swiftui">KeyRecorderView</span>
+                <span class="tag-req">FR-013</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-header">オプション</div>
+        <div class="form-group">
+          <div class="form-row">
+            <div>
+              <div class="form-label">グローバルホットキーを有効にする</div>
+              <div class="form-sublabel">アプリが前面にない状態でもショートカットが動作します</div>
+            </div>
+            <div class="form-control">
+              <div class="sw-toggle on"></div>
+              <div class="annotations">
+                <span class="tag-swiftui">Toggle</span>
+                <span class="tag-req">FR-012</span>
+              </div>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-label">ホットキーをデフォルトに戻す</div>
+            <div class="form-control">
+              <button class="sw-button">リセット</button>
+              <div class="annotations">
+                <span class="tag-swiftui">Button</span>
+                <span class="tag-req">FR-014</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-box">
+        <div class="info-box-title">⚙ 実装メモ</div>
+        <div class="info-box-body">
+          <code>KeyRecorderView</code> は <code>NSViewRepresentable</code> でAppKitをラップし、<code>NSEvent.keyDown</code> を受け取ってキーバインドを記録する。<br>
+          グローバル監視は <code>NSEvent.addGlobalMonitorForEvents(matching: .keyDown)</code> を使用。アクセシビリティ権限が必須。<br>
+          macOS標準のCmd+Shift+3/4/5はシステム予約のため、デフォルトはCtrl+Shift+3/4/5（⌃⇧）を採用。
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== キャプチャ設定 ===== -->
+<div id="view-capture" class="view-container">
+  <div class="section-title">Settings Scene — 「キャプチャ」タブ</div>
+  <div class="window">
+    <div class="titlebar">
+      <div class="traffic-lights">
+        <div class="traffic-light tl-close"></div>
+        <div class="traffic-light tl-min"></div>
+        <div class="traffic-light tl-max"></div>
+      </div>
+      <span class="titlebar-text">設定</span>
+    </div>
+
+    <div class="tab-bar">
+      <div class="tab">
+        <span class="tab-icon">⚙️</span>
+        <span>一般</span>
+      </div>
+      <div class="tab">
+        <span class="tab-icon">⌨️</span>
+        <span>ホットキー</span>
+      </div>
+      <div class="tab active">
+        <span class="tab-icon">📷</span>
+        <span>キャプチャ</span>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="form-section">
+        <div class="form-section-header">ウィンドウキャプチャ</div>
+        <div class="form-group">
+          <div class="form-row">
+            <div>
+              <div class="form-label">ウィンドウの影を含める</div>
+              <div class="form-sublabel">ウィンドウキャプチャ時にドロップシャドウを含めます</div>
+            </div>
+            <div class="form-control">
+              <div class="sw-toggle"></div>
+              <div class="annotations">
+                <span class="tag-swiftui">Toggle</span>
+                <span class="tag-req">FR-019</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-header">マルチディスプレイ</div>
+        <div class="form-group">
+          <div class="form-row">
+            <div>
+              <div class="form-label">全画面キャプチャ対象</div>
+              <div class="form-sublabel">複数ディスプレイ接続時の動作</div>
+            </div>
+            <div class="form-control">
+              <div class="sw-picker" style="min-width:180px;">
+                <span>メインディスプレイのみ</span>
+                <span class="chevron">⌄</span>
+              </div>
+              <div class="annotations">
+                <span class="tag-swiftui">Picker</span>
+                <span class="tag-appkit">SCShareableContent</span>
+                <span class="tag-req">FR-002</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-header">キャプチャ音</div>
+        <div class="form-group">
+          <div class="form-row">
+            <div class="form-label">キャプチャ時にサウンドを鳴らす</div>
+            <div class="form-control">
+              <div class="sw-toggle"></div>
+              <div class="annotations">
+                <span class="tag-swiftui">Toggle</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-header">権限ステータス</div>
+        <div class="form-group">
+          <div class="form-row">
+            <div>
+              <div class="form-label">スクリーン収録</div>
+              <div class="form-sublabel perm-granted">✓ 許可済み</div>
+            </div>
+            <div class="form-control">
+              <button class="sw-button">システム設定を開く</button>
+              <div class="annotations">
+                <span class="tag-appkit">SCShareableContent.current</span>
+                <span class="tag-req">NFR-001</span>
+              </div>
+            </div>
+          </div>
+          <div class="form-row">
+            <div>
+              <div class="form-label">アクセシビリティ</div>
+              <div class="form-sublabel perm-denied">✗ 未許可</div>
+            </div>
+            <div class="form-control">
+              <button class="sw-button prominent">権限を許可</button>
+              <div class="annotations">
+                <span class="tag-appkit">AXIsProcessTrusted()</span>
+                <span class="tag-req">NFR-003</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-box">
+        <div class="info-box-title">⚙ 実装メモ</div>
+        <div class="info-box-body">
+          権限チェックは <code>PermissionService</code> で一元管理。<br>
+          Screen Recording権限: <code>SCShareableContent.current</code> 呼び出しで自動的にシステム許可ダイアログが起動。<br>
+          Accessibility権限: <code>AXIsProcessTrusted()</code> で判定、<code>NSWorkspace.shared.open(URL(...))</code> でシステム設定を起動。<br>
+          影の制御は <code>SCStreamConfiguration</code> のプロパティまたは<code>CGWindowListCreateImage</code>のオプションで実装。
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== メニューバー ===== -->
+<div id="view-menubar" class="view-container">
+  <div class="section-title">MenuBarExtra — メニューバー常駐UI</div>
+  <div class="menubar-mock">
+    <div class="menubar-header">
+      <div class="menubar-header-title">メニューバー表示イメージ</div>
+      <div class="menubar-header-sub">macOS画面上部のステータスバーに常駐</div>
+    </div>
+
+    <div class="menubar-status">
+      <div class="dot-group">
+        <span style="opacity:0.6;">􀊫</span>
+        <span style="opacity:0.6;">􀊞</span>
+        <span style="opacity:0.6;">􁏜</span>
+        <span class="icon-box our-icon">
+          <span>📷</span>
+        </span>
+        <span style="opacity:0.6;">􀋦</span>
+        <span style="opacity:0.6;">🔋</span>
+        <span style="opacity:0.6;">🔍</span>
+        <span style="opacity:0.6;">⌘</span>
+      </div>
+      <span style="margin-left:auto;opacity:0.7;font-size:11px;">4月16日(木) 14:30</span>
+    </div>
+
+    <div class="menu-dropdown">
+      <div class="menu-item">
+        <span>📸 全画面キャプチャ</span>
+        <span class="shortcut">⌃⇧3</span>
+      </div>
+      <div class="menu-item">
+        <span>✂️ 範囲選択キャプチャ</span>
+        <span class="shortcut">⌃⇧4</span>
+      </div>
+      <div class="menu-item">
+        <span>🪟 ウィンドウキャプチャ</span>
+        <span class="shortcut">⌃⇧5</span>
+      </div>
+      <div class="menu-divider"></div>
+      <div class="menu-item">
+        <span>⚙️ 設定...</span>
+        <span class="shortcut">⌘,</span>
+      </div>
+      <div class="menu-divider"></div>
+      <div class="menu-item">
+        <span>終了</span>
+        <span class="shortcut">⌘Q</span>
+      </div>
+    </div>
+
+    <div style="padding: 0 20px 20px;">
+      <div class="info-box" style="margin-top:0;">
+        <div class="info-box-title">⚙ 実装メモ</div>
+        <div class="info-box-body">
+          SwiftUIの <code>MenuBarExtra</code> シーンで実装（macOS 13+）。<code>@main App</code> 内で宣言的に定義可能。<br>
+          メニュー項目クリック時は対応する <code>CaptureService</code> メソッドを呼び出す。<br>
+          「設定...」は <code>SettingsLink</code>（macOS 14+）で標準の設定ウィンドウを起動。<br>
+          <code>MenuBarExtraStyle</code> は <code>.menu</code> を指定（クリックでポップアップメニュー表示）。
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== コンポーネント一覧 ===== -->
+<div class="spec-section">
+  <h2>コンポーネント一覧</h2>
+  <table class="spec-table">
+    <thead>
+      <tr>
+        <th style="width:18%;">コンポーネント</th>
+        <th style="width:22%;">SwiftUI / AppKit型</th>
+        <th style="width:12%;">要件</th>
+        <th style="width:23%;">用途</th>
+        <th style="width:25%;">バインディング</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>設定ウィンドウ</td>
+        <td><code>Settings { ... }</code> + <code>TabView</code></td>
+        <td class="req-id">—</td>
+        <td>macOS標準の設定ウィンドウ</td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td>保存先パス</td>
+        <td><code>TextField</code> + <code>.fileImporter</code></td>
+        <td class="req-id">FR-015</td>
+        <td>保存先ディレクトリの表示・選択</td>
+        <td><code>@AppStorage("saveDirectory")</code></td>
+      </tr>
+      <tr>
+        <td>保存形式</td>
+        <td><code>Picker</code></td>
+        <td class="req-id">FR-016</td>
+        <td>PNG / JPEG の切り替え</td>
+        <td><code>@AppStorage("imageFormat")</code></td>
+      </tr>
+      <tr>
+        <td>JPEG品質</td>
+        <td><code>Slider</code> + <code>Text</code></td>
+        <td class="req-id">FR-011</td>
+        <td>JPEG圧縮品質 (1-100)</td>
+        <td><code>@AppStorage("jpegQuality")</code></td>
+      </tr>
+      <tr>
+        <td>ファイル名パターン</td>
+        <td><code>Picker</code></td>
+        <td class="req-id">FR-010</td>
+        <td>ファイル名の自動生成パターン</td>
+        <td><code>@AppStorage("fileNamePattern")</code></td>
+      </tr>
+      <tr>
+        <td>メニューバー常駐</td>
+        <td><code>MenuBarExtra</code></td>
+        <td class="req-id">FR-020</td>
+        <td>ステータスバーへの常駐</td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td>表示言語</td>
+        <td><code>Picker</code></td>
+        <td class="req-id">FR-023</td>
+        <td>UI言語の切り替え（システム / 日本語 / English）</td>
+        <td><code>@AppStorage("appLanguage")</code></td>
+      </tr>
+      <tr>
+        <td>トレイメニュー</td>
+        <td><code>Menu</code> + <code>Button</code></td>
+        <td class="req-id">FR-021, FR-022</td>
+        <td>キャプチャモード選択メニュー</td>
+        <td><code>CaptureService</code> 呼び出し</td>
+      </tr>
+      <tr>
+        <td>ホットキー表示/入力</td>
+        <td><code>KeyRecorderView</code> (<code>NSViewRepresentable</code>)</td>
+        <td class="req-id">FR-013, FR-014</td>
+        <td>キーバインド表示・変更</td>
+        <td><code>@AppStorage + HotKey</code> model</td>
+      </tr>
+      <tr>
+        <td>グローバルHK有効化</td>
+        <td><code>Toggle</code></td>
+        <td class="req-id">FR-012</td>
+        <td>グローバルホットキーON/OFF</td>
+        <td><code>@AppStorage("globalHotkeyEnabled")</code></td>
+      </tr>
+      <tr>
+        <td>ウィンドウ影</td>
+        <td><code>Toggle</code></td>
+        <td class="req-id">FR-019</td>
+        <td>ウィンドウ影の有無</td>
+        <td><code>@AppStorage("includeWindowShadow")</code></td>
+      </tr>
+      <tr>
+        <td>ディスプレイ選択</td>
+        <td><code>Picker</code></td>
+        <td class="req-id">FR-002</td>
+        <td>キャプチャ対象ディスプレイ</td>
+        <td><code>SCShareableContent.displays</code></td>
+      </tr>
+      <tr>
+        <td>権限ステータス表示</td>
+        <td><code>Text</code> + <code>Button</code></td>
+        <td class="req-id">NFR-001, NFR-003</td>
+        <td>macOS権限の状態表示・設定起動</td>
+        <td><code>PermissionService</code></td>
+      </tr>
+      <tr>
+        <td>範囲選択オーバーレイ</td>
+        <td><code>NSWindow</code> + <code>NSView</code></td>
+        <td class="req-id">FR-003, FR-004, FR-005</td>
+        <td>フルスクリーン透過ウィンドウでの矩形選択UI</td>
+        <td><code>RegionSelector</code> utility</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<script>
+  function switchView(event, name) {
+    document.querySelectorAll('.view-container').forEach(v => v.classList.remove('active'));
+    document.querySelectorAll('.section-nav-item').forEach(t => t.classList.remove('active'));
+    document.getElementById('view-' + name).classList.add('active');
+    event.target.classList.add('active');
+  }
+</script>
+
+</body>
+</html>
