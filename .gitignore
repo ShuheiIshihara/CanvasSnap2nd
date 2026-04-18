@@ -52,3 +52,15 @@ CodeCoverage/
 *.VisualState.xml
 TestResult.xml
 nunit-*.xml
+
+# Xcode
+*.xcuserstate
+xcuserdata/
+DerivedData/
+*.xccheckout
+
+# macOS
+.DS_Store
+
+# Claude Code (personal local settings)
+.claude/settings.local.json
