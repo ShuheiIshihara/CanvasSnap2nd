@@ -1,7 +1,9 @@
 import SwiftUI
+import AppKit
 
 struct GeneralSettingsTab: View {
-    @AppStorage("saveDirectory") private var saveDirectory = "~/Desktop/Screenshots"
+    @AppStorage("saveDirectory") private var saveDirectory = FileService.defaultSaveDirectory
+    @AppStorage("saveDirectoryBookmark") private var saveDirectoryBookmark = Data()
     @AppStorage("imageFormat") private var imageFormat = "PNG"
     @AppStorage("jpegQuality") private var jpegQuality = 85.0
     @AppStorage("fileNamePattern") private var fileNamePattern = "Screenshot_{date}_{time}"
@@ -15,7 +17,7 @@ struct GeneralSettingsTab: View {
                 LabeledContent("保存先ディレクトリ") {
                     HStack {
                         TextField("", text: $saveDirectory)
-                        Button("参照...") { }
+                        Button("参照...") { chooseSaveDirectory() }
                     }
                 }
                 Picker("デフォルト保存形式", selection: $imageFormat) {
@@ -43,6 +45,27 @@ struct GeneralSettingsTab: View {
             }
         }
         .formStyle(.grouped)
+    }
+
+    private func chooseSaveDirectory() {
+        let panel = NSOpenPanel()
+        panel.canChooseDirectories = true
+        panel.canChooseFiles = false
+        panel.allowsMultipleSelection = false
+        panel.prompt = "選択"
+
+        guard panel.runModal() == .OK, let url = panel.url else { return }
+
+        do {
+            saveDirectoryBookmark = try url.bookmarkData(
+                options: .withSecurityScope,
+                includingResourceValuesForKeys: nil,
+                relativeTo: nil
+            )
+            saveDirectory = url.path
+        } catch {
+            print("ブックマーク作成エラー: \(error)")
+        }
     }
 }
 
