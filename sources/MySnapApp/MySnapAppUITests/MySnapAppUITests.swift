@@ -2,7 +2,6 @@
 //  MySnapAppUITests.swift
 //  MySnapAppUITests
 //
-//  Created by 石原脩平 on 2026/04/16.
 //
 
 import XCTest
