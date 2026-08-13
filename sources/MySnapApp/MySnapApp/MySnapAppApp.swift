@@ -5,6 +5,7 @@
 //
 
 import SwiftUI
+import os
 
 @main
 struct MySnapAppApp: App {
@@ -43,9 +44,9 @@ struct MySnapAppApp: App {
                     to: saveDirectory,
                     bookmark: saveDirectoryBookmark
                 )
-                print("保存完了: \(url.path)")
+                AppLogger.capture.info("保存完了: \(url.path, privacy: .private)")
             } catch {
-                print("エラー: \(error)")
+                AppLogger.capture.error("キャプチャ保存エラー: \(error.localizedDescription)")
             }
         }
     }

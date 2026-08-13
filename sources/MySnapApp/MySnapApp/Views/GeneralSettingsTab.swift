@@ -1,5 +1,6 @@
 import SwiftUI
 import AppKit
+import os
 
 struct GeneralSettingsTab: View {
     @AppStorage(SettingsKey.saveDirectory) private var saveDirectory = AppSettings.Default.saveDirectory
@@ -64,7 +65,7 @@ struct GeneralSettingsTab: View {
             )
             saveDirectory = url.path
         } catch {
-            print("ブックマーク作成エラー: \(error)")
+            AppLogger.settings.error("ブックマーク作成エラー: \(error.localizedDescription)")
         }
     }
 }
