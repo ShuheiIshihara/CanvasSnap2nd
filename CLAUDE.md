@@ -72,3 +72,6 @@ Also pin current behavior you intend to change later: write the test against wha
 
 ## tech-term-explainer
   tech_term_output: docs/terms/
+
+## swift-review
+  review_report_output: docs/reviews/
