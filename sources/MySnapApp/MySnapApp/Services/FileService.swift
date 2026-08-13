@@ -18,9 +18,17 @@ struct FileService {
         
         // 2. 保存先URLを組み立てる
         let url = URL(fileURLWithPath: (directory as NSString).expandingTildeInPath).appendingPathComponent(fileName)
-        
-        // 3. CGImage を PNG として書き出す
-        let destination = CGImageDestinationCreateWithURL(url as CFURL, UTType.png.identifier as CFString, 1, nil)!
+
+        // 3. 保存先ディレクトリがなければ作成する
+        try FileManager.default.createDirectory(
+            at: url.deletingLastPathComponent(),
+            withIntermediateDirectories: true
+        )
+
+        // 4. CGImage を PNG として書き出す
+        guard let destination = CGImageDestinationCreateWithURL(url as CFURL, UTType.png.identifier as CFString, 1, nil) else {
+            throw FileServiceError.failedToSave
+        }
         CGImageDestinationAddImage(destination, image, nil)
         guard CGImageDestinationFinalize(destination) else {
             throw FileServiceError.failedToSave

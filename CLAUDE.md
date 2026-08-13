@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**CanvasSnap2nd** is a .NET application (successor to CanvasSnap). The repository is in early setup stage — update this file as the tech stack and architecture are defined.
+**CanvasSnap2nd** is a macOS screenshot capture app, built with Swift 6 + SwiftUI/AppKit on top of ScreenCaptureKit. The project was originally planned as a C# + Avalonia app but switched to native Swift for direct access to ScreenCaptureKit and macOS-specific features (global hotkeys, menu bar residency). Target OS is macOS 26 (Apple Silicon / arm64). Requirements live in `docs/memo/要件定義書_スクリーンショットアプリ.md`.
 
 ## Git Workflow
 
@@ -14,27 +14,32 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Build & Test Commands
 
-_To be filled in once the project structure is established._
-
-Typical .NET commands (update with actual project paths when `.csproj`/`.sln` files are added):
+The Xcode project is at `sources/MySnapApp/MySnapApp.xcodeproj` (scheme: `MySnapApp`).
 
 ```bash
-dotnet build          # Build the solution
-dotnet run            # Run the application
-dotnet test           # Run all tests
-dotnet test --filter "FullyQualifiedName~TestName"  # Run a single test
-dotnet lint           # Lint (if configured via analyzers)
+# Build
+xcodebuild -project sources/MySnapApp/MySnapApp.xcodeproj -scheme MySnapApp build
+
+# Run all tests
+xcodebuild -project sources/MySnapApp/MySnapApp.xcodeproj -scheme MySnapApp test
+
+# Run a single test
+xcodebuild -project sources/MySnapApp/MySnapApp.xcodeproj -scheme MySnapApp test \
+  -only-testing:MySnapAppTests/SomeTestClass/testSomeMethod
 ```
+
+Prefer opening the project in Xcode for iterative development; use `xcodebuild` from the CLI for verification.
 
 ## Architecture
 
-_To be documented as the codebase takes shape._
-
-Key decisions to record here when made:
-- Target framework (ASP.NET Core, Blazor, WPF, MAUI, etc.)
-- Project structure (`/src`, `/tests`, solution layout)
-- Database technology and ORM (EF Core, Dapper, etc.)
-- Key NuGet dependencies
+- `sources/MySnapApp/MySnapApp/` — app target
+  - `MySnapAppApp.swift` — app entry point
+  - `ContentView.swift` — root view
+  - `Services/` — capture and file I/O logic (`CaptureService.swift` wraps ScreenCaptureKit, `FileService.swift` handles saving output)
+  - `Views/` — SwiftUI views, currently the settings UI (`SettingsView.swift` plus `GeneralSettingsTab.swift`, `CaptureSettingsTab.swift`, `HotkeySettingsTab.swift`)
+- `sources/MySnapApp/MySnapAppTests/` — unit tests
+- `sources/MySnapApp/MySnapAppUITests/` — UI tests
+- Core Data was removed in favor of a simpler settings-driven approach (see commit history around Phase 1 UI work).
 
 ## tech-term-explainer
   tech_term_output: docs/terms/
