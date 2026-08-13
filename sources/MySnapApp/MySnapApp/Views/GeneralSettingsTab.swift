@@ -2,13 +2,13 @@ import SwiftUI
 import AppKit
 
 struct GeneralSettingsTab: View {
-    @AppStorage("saveDirectory") private var saveDirectory = FileService.defaultSaveDirectory
-    @AppStorage("saveDirectoryBookmark") private var saveDirectoryBookmark = Data()
-    @AppStorage("imageFormat") private var imageFormat = "PNG"
-    @AppStorage("jpegQuality") private var jpegQuality = 85.0
-    @AppStorage("fileNamePattern") private var fileNamePattern = "Screenshot_{date}_{time}"
-    @AppStorage("showInMenuBar") private var showInMenuBar = true
-    @AppStorage("appLanguage") private var appLanguage = "system"
+    @AppStorage(SettingsKey.saveDirectory) private var saveDirectory = AppSettings.Default.saveDirectory
+    @AppStorage(SettingsKey.saveDirectoryBookmark) private var saveDirectoryBookmark = Data()
+    @AppStorage(SettingsKey.imageFormat) private var imageFormat = AppSettings.Default.imageFormat
+    @AppStorage(SettingsKey.jpegQuality) private var jpegQuality = AppSettings.Default.jpegQuality
+    @AppStorage(SettingsKey.fileNamePattern) private var fileNamePattern = AppSettings.Default.fileNamePattern
+    @AppStorage(SettingsKey.showInMenuBar) private var showInMenuBar = AppSettings.Default.showInMenuBar
+    @AppStorage(SettingsKey.appLanguage) private var appLanguage = AppSettings.Default.appLanguage
 
     var body: some View {
         Form {
@@ -26,7 +26,7 @@ struct GeneralSettingsTab: View {
                 }
                 LabeledContent("JPEG品質") {
                     HStack() {
-                        Slider(value: $jpegQuality, in: 1...100, step: 1)
+                        Slider(value: $jpegQuality, in: AppSettings.jpegQualityRange, step: 1)
                         Text("\(Int(jpegQuality))%")
                     }
                 }

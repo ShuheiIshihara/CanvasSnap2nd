@@ -9,11 +9,10 @@ import SwiftUI
 
 @main
 struct MySnapAppApp: App {
-    @AppStorage("saveDirectory") private var saveDirectory = FileService.defaultSaveDirectory
-    @AppStorage("saveDirectoryBookmark") private var saveDirectoryBookmark = Data()
+    @AppStorage(SettingsKey.saveDirectory) private var saveDirectory = AppSettings.Default.saveDirectory
+    @AppStorage(SettingsKey.saveDirectoryBookmark) private var saveDirectoryBookmark = Data()
 
-    private let captureService = CaptureService()
-    private let fileService = FileService()
+    private let coordinator = ScreenshotCoordinator()
 
     var body: some Scene {
         Settings {
@@ -41,8 +40,10 @@ struct MySnapAppApp: App {
     private func captureAndSave() {
         Task {
             do {
-                let image = try await captureService.captureFullScreen()
-                let url = try fileService.save(image, to: saveDirectory, bookmark: saveDirectoryBookmark)
+                let url = try await coordinator.captureAndSave(
+                    to: saveDirectory,
+                    bookmark: saveDirectoryBookmark
+                )
                 print("保存完了: \(url.path)")
             } catch {
                 print("エラー: \(error)")
